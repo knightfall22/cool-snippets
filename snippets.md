@@ -199,7 +199,7 @@ Varints, short for variable-length integers, are a way of encoding integers usin
 Each byte has 7 bits of data and 1 continuation bit. In Little-Endian order the most significant bit (MSB) of each byte (bit 7) is used to indicate whether more bytes follow
 `1` indicate that theres more `0` indicates that there isn't.
 
-For more information - [here](https://protobuf.dev/programming-guides/encoding/#signed-ints)
+For more information - [here](https://protobuf.dev/programming-guides/encoding/#signed-ints). 
 Also, you can read the std library varint pkgs
 
 ```go
