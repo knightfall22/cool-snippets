@@ -222,3 +222,62 @@ func ReadUVarint(b *bytes.Reader) (uint64, error) {
 }
 
 ```
+
+##
+
+#### Fetches path directory in relation to root
+
+```go
+	relDir, err := filepath.Rel(root, filepath.Dir(path))
+	if err != nil {
+		return err
+	}
+```
+
+## Running programs with code
+
+#### Opening default app for a file
+
+You can open a file using `os/exec`. Snippet from [here](https://github.com/knightfall22/cli-book/blob/main/3_mdp/main.go#L124). This snippet runs start command on the cmd to open an html file
+
+```go
+	cName := ""
+	cParams := []string{}
+
+	// Define executable based on OS
+	switch runtime.GOOS {
+	case "linux":
+		cName = "xdg-open"
+	case "windows":
+		cName = "cmd.exe"
+		cParams = []string{"/C", "start"}
+	case "darwin":
+		cName = "open"
+	default:
+		return fmt.Errorf("OS not supported")
+	}
+
+	cParams = append(cParams, fname)
+
+	// Locate executable in PATH
+	cPath, err := exec.LookPath(cName)
+
+    //Path C:\WINDOWS\system32\cmd.exe
+    //Params [/C start C:\Users\ELITEG~1\AppData\Local\Temp\mdp3455502293.html]
+
+	if err != nil {
+		return err
+	}
+
+	if err := exec.Command(cPath, cParams...).Run(); err != nil {
+		return err
+	}
+```
+
+### MISC
+
+- <random command> | tee result.txt - Saves result from STDOUT to result.txt
+- `go get -u -v golang.org/x/tools/cmd/benchcmp` - Can be used to compare two benchmark results
+- `go test -bench . -benchtime=10x -run ^$ -cpuprofile cpu01.pprof` - Generate benchmark pprof file
+- `go test -bench . -benchtime=10x -run ^$ -memprofile mem00.pprof` - Generate memory allocation pprof file
+- `go tool pprof -alloc_space mem00.pprof` - enter pprof interactive mode for mem allocation
