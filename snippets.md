@@ -2,6 +2,49 @@
 
 Helpful code snippets that stops me from opening 20 instances of VScode
 
+### Parse Pagination Filters From Request
+```go
+type GetCategoryFilter struct {
+	Limit  int
+	Offset int
+	Page   int
+}
+
+parseCategoryFilters(r *http.Request) (*GetCategoryFilter, error) {
+	query := r.URL.Query()
+
+	limit := 10
+	page := 1
+
+	if limitStr := query.Get("limit"); limitStr != "" {
+		parsedLimit, err := strconv.Atoi(limitStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid 'limit' parameter")
+		}
+		limit = parsedLimit
+	}
+
+	if limit > 100 || limit < 1 {
+		//reset limit to default when it exceeds this bound
+		limit = 10
+	}
+
+	if pageStr := query.Get("page"); pageStr != "" {
+		parsedPage, err := strconv.Atoi(pageStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid 'limit' parameter")
+		}
+		page = parsedPage
+	}
+
+	return &models.GetCategoryFilter{
+		Limit:  limit,
+		Page:   page,
+		Offset: (page - 1) * limit,
+	}, nil
+}
+```
+
 ### Networking
 
 #### Concurrent TCP connection
