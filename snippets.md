@@ -2,6 +2,37 @@
 
 Helpful code snippets that stops me from opening 20 instances of VScode
 
+### Graceful HTTP Shutdown
+```go
+func main() {
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: mux,
+	}
+
+	go func() {
+		log.Println("Starting server...")
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("Server could not start: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	<-quit
+
+	log.Println("Shutting down server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatalf("Server could not shutdown: %v", err)
+	}
+}
+```
+
 ### Parse Pagination Filters From Request
 ```go
 type GetCategoryFilter struct {
