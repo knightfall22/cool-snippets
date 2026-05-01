@@ -2,6 +2,18 @@
 
 Helpful code snippets that stops me from opening 20 instances of VScode
 
+### Set up logurs
+```go
+	logger := logrus.New()
+	logger.SetFormatter(&logrus.JSONFormatter{})
+
+	//Attach with context
+	logger.WithContext(ctx).WithField("method", "reverifyEmail")
+
+	//Attach with error
+	useLogger.WithError(err).Error("failed to get token")
+```
+
 ### Graceful HTTP Shutdown
 ```go
 func main() {
