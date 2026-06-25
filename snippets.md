@@ -83,6 +83,26 @@ func TestProductGetHandler(t *testing.T) {
 }
 ```
 
+### Prevent redirection so header can be inspected
+```go
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse // Tells the client not to follow the redirect
+		},
+	}
+
+	redirectResp, err := client.Get("http://random.site")
+	if err != nil {
+		t.Fatalf("Failed to make GET request: %v", err)
+	}
+	defer redirectResp.Body.Close()
+
+	location := redirectResp.Header.Get("Location")
+	if location != targetURL {
+		t.Errorf("Expected redirect Location %q, got %q", targetURL, location)
+	}
+```
+
 ### Set up logurs
 ```go
 	logger := logrus.New()
